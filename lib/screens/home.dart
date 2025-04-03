@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
+import 'package:image/image.dart' as img;
+import 'package:flutter/services.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -50,22 +54,43 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     }
   }
 
-  void _analyzeImage(File imageFile) {
-    // This is where you would call your disease detection function
-    // For now, we'll just navigate to a results screen with dummy data
+  void _analyzeImage(File imageFile) async {
+    // Initialize the detector
+    PlantDiseaseDetector detector = PlantDiseaseDetector();
+    await detector.loadModel();
 
+    // Process the image and get the prediction
+    String? prediction = await detector.processImage(imageFile.path);
+
+    // Set a default confidence value (since TFLite models usually return probabilities)
+    double confidence = 0.90; // Modify this based on actual model output if needed
+
+    // Define treatment suggestions (you can extend this logic)
+    Map<String, String> treatments = {
+      "Apple___Apple_scab": "Use fungicides like captan or mancozeb.",
+      "Apple___Black_rot": "Remove infected fruit and apply copper-based sprays.",
+      "Corn_(maize)___Common_rust_": "Use resistant hybrids and fungicides if needed.",
+      "Tomato___Early_blight": "Apply fungicides and ensure good air circulation.",
+      "Tomato___Late_blight": "Use copper-based fungicides and remove affected leaves.",
+      "Tomato___healthy": "No treatment needed, the plant is healthy!"
+    };
+
+    String treatment = treatments[prediction] ?? "Consult an expert for treatment advice.";
+
+    // Navigate to the result screen with real prediction data
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => DiseaseResultScreen(
           imagePath: imageFile.path,
-          diseaseName: "Leaf Spot",
-          confidence: 0.87,
-          treatment: "Apply fungicide and ensure proper spacing between plants.",
+          diseaseName: prediction ?? "Unknown Disease",
+          confidence: confidence,
+          treatment: treatment,
         ),
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -478,5 +503,77 @@ class DiseaseResultScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+
+class PlantDiseaseDetector {
+  late tfl.Interpreter _interpreter;
+  final List<String> classNames = [
+    'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
+    'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew', 'Cherry_(including_sour)___healthy',
+    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot', 'Corn_(maize)___Common_rust_',
+    'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy', 'Grape___Black_rot',
+    'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
+    'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot', 'Peach___healthy',
+    'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy', 'Potato___Early_blight',
+    'Potato___Late_blight', 'Potato___healthy', 'Raspberry___healthy', 'Soybean___healthy',
+    'Squash___Powdery_mildew', 'Strawberry___Leaf_scorch', 'Strawberry___healthy',
+    'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
+    'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
+    'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
+    'Tomato___healthy'
+  ];
+
+  Future<void> loadModel() async {
+    _interpreter = await tfl.Interpreter.fromAsset('assets/plant_disease_detection.tflite');
+  }
+
+  Future<String?> processImage(String imagePath) async {
+    // Load the image
+    File imageFile = File(imagePath);
+    Uint8List imageBytes = await imageFile.readAsBytes();
+    img.Image? image = img.decodeImage(imageBytes);
+
+    if (image == null) {
+      print("Error: Unable to process image.");
+      return null;
+    }
+
+    // Resize image to 224x224
+    img.Image resizedImage = img.copyResize(image, width: 224, height: 224);
+
+    // Normalize image (convert to float values between 0 and 1)
+    List<List<List<num>>> inputImage = List.generate(
+      224,
+          (y) => List.generate(
+        224,
+            (x) {
+          var pixel = resizedImage.getPixel(x, y);
+          return [pixel.r / 255.0, pixel.g / 255.0, pixel.b / 255.0];
+        },
+      ),
+    );
+
+    // Prepare input tensor
+    var input = [inputImage];
+
+    // Define output tensor
+    var output = List.filled(1 * classNames.length, 0.0).reshape([1, classNames.length]);
+
+    // Run inference
+    _interpreter.run(input, output);
+
+    // Get predicted class
+    int maxIndex = 0;
+    double maxValue = output[0][0];
+    for (int i = 1; i < classNames.length; i++) {
+      if (output[0][i] > maxValue) {
+        maxIndex = i;
+        maxValue = output[0][i];
+      }
+    }
+
+    return classNames[maxIndex];
   }
 }
