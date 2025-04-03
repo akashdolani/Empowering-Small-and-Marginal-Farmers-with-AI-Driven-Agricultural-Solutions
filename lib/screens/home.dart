@@ -510,70 +510,110 @@ class DiseaseResultScreen extends StatelessWidget {
 class PlantDiseaseDetector {
   late tfl.Interpreter _interpreter;
   final List<String> classNames = [
-    'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
-    'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew', 'Cherry_(including_sour)___healthy',
-    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot', 'Corn_(maize)___Common_rust_',
-    'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy', 'Grape___Black_rot',
-    'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
-    'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot', 'Peach___healthy',
-    'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy', 'Potato___Early_blight',
-    'Potato___Late_blight', 'Potato___healthy', 'Raspberry___healthy', 'Soybean___healthy',
-    'Squash___Powdery_mildew', 'Strawberry___Leaf_scorch', 'Strawberry___healthy',
-    'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
-    'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
-    'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
+    'Apple___Apple_scab',
+    'Apple___Black_rot',
+    'Apple___Cedar_apple_rust',
+    'Apple___healthy',
+    'Blueberry___healthy',
+    'Cherry_(including_sour)___Powdery_mildew',
+    'Cherry_(including_sour)___healthy',
+    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
+    'Corn_(maize)___Common_rust_',
+    'Corn_(maize)___Northern_Leaf_Blight',
+    'Corn_(maize)___healthy',
+    'Grape___Black_rot',
+    'Grape___Esca_(Black_Measles)',
+    'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
+    'Grape___healthy',
+    'Orange___Haunglongbing_(Citrus_greening)',
+    'Peach___Bacterial_spot',
+    'Peach___healthy',
+    'Pepper,_bell___Bacterial_spot',
+    'Pepper,_bell___healthy',
+    'Potato___Early_blight',
+    'Potato___Late_blight',
+    'Potato___healthy',
+    'Raspberry___healthy',
+    'Soybean___healthy',
+    'Squash___Powdery_mildew',
+    'Strawberry___Leaf_scorch',
+    'Strawberry___healthy',
+    'Tomato___Bacterial_spot',
+    'Tomato___Early_blight',
+    'Tomato___Late_blight',
+    'Tomato___Leaf_Mold',
+    'Tomato___Septoria_leaf_spot',
+    'Tomato___Spider_mites Two-spotted_spider_mite',
+    'Tomato___Target_Spot',
+    'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
+    'Tomato___Tomato_mosaic_virus',
     'Tomato___healthy'
   ];
 
   Future<void> loadModel() async {
-    _interpreter = await tfl.Interpreter.fromAsset('assets/plant_disease_detection.tflite');
+    try {
+      _interpreter = await tfl.Interpreter.fromAsset('assets/plant_disease_detection.tflite');
+    } catch (e) {
+      print('Failed to load model: $e');
+    }
   }
 
   Future<String?> processImage(String imagePath) async {
-    // Load the image
-    File imageFile = File(imagePath);
-    Uint8List imageBytes = await imageFile.readAsBytes();
-    img.Image? image = img.decodeImage(imageBytes);
+    try {
+      // Load the image
+      File imageFile = File(imagePath);
+      Uint8List imageBytes = await imageFile.readAsBytes();
+      img.Image? image = img.decodeImage(imageBytes);
 
-    if (image == null) {
-      print("Error: Unable to process image.");
+      if (image == null) {
+        print("Error: Unable to process image.");
+        return null;
+      }
+
+      // Resize image to 224x224
+      img.Image resizedImage = img.copyResize(image, width: 224, height: 224);
+
+      // Prepare input tensor [1, 224, 224, 3]
+      var input = List.generate(
+        1,
+            (_) => List.generate(
+          224,
+              (y) => List.generate(
+            224,
+                (x) {
+              var pixel = resizedImage.getPixel(x, y);
+              // Convert pixel values to float and normalize
+              return [
+                img.getRed(pixel) / 255.0,
+                img.getGreen(pixel) / 255.0,
+                img.getBlue(pixel) / 255.0
+              ];
+            },
+          ),
+        ),
+      );
+
+      // Prepare output tensor [1, num_classes]
+      var output = List.filled(1 * classNames.length, 0.0)
+          .reshape([1, classNames.length]);
+
+      // Run inference
+      _interpreter.run(input, output);
+
+      // Find the index of maximum probability
+      int maxIndex = 0;
+      double maxValue = output[0][0];
+      for (int i = 1; i < classNames.length; i++) {
+        if (output[0][i] > maxValue) {
+          maxIndex = i;
+          maxValue = output[0][i];
+        }
+      }
+
+      return classNames[maxIndex];
+    } catch (e) {
+      print('Error processing image: $e');
       return null;
     }
-
-    // Resize image to 224x224
-    img.Image resizedImage = img.copyResize(image, width: 224, height: 224);
-
-    // Normalize image (convert to float values between 0 and 1)
-    List<List<List<num>>> inputImage = List.generate(
-      224,
-          (y) => List.generate(
-        224,
-            (x) {
-          var pixel = resizedImage.getPixel(x, y);
-          return [pixel.r / 255.0, pixel.g / 255.0, pixel.b / 255.0];
-        },
-      ),
-    );
-
-    // Prepare input tensor
-    var input = [inputImage];
-
-    // Define output tensor
-    var output = List.filled(1 * classNames.length, 0.0).reshape([1, classNames.length]);
-
-    // Run inference
-    _interpreter.run(input, output);
-
-    // Get predicted class
-    int maxIndex = 0;
-    double maxValue = output[0][0];
-    for (int i = 1; i < classNames.length; i++) {
-      if (output[0][i] > maxValue) {
-        maxIndex = i;
-        maxValue = output[0][i];
-      }
-    }
-
-    return classNames[maxIndex];
   }
 }
