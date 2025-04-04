@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1014160948784",
+    "project_id": "solutionchallenge-b3898",
+    "storage_bucket": "solutionchallenge-b3898.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1014160948784:android:067827db98804c653077f5",
+        "android_client_info": {
+          "package_name": "com.example.solutionchallenge"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaYIhlBHvSgll5Hj6249b8k0JDJ6szink"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
