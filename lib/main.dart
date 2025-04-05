@@ -11,12 +11,14 @@ import 'screens/faq.dart';
 import 'screens/hardware.dart';
 import 'screens/profile.dart';
 import 'firebase_options.dart'; // You need to generate this file using FlutterFire CLI
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await dotenv.load(fileName: ".env");
   runApp(
       ChangeNotifierProvider(
         create: (context) => LanguageProvider(),

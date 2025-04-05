@@ -6,6 +6,8 @@ import '../widgets/loading_spinner.dart';
 import 'widgets/bottom_navbar.dart';
 import 'widgets/message_widget.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class GeminiScreen extends StatefulWidget {
   const GeminiScreen({super.key});
 
@@ -20,7 +22,7 @@ class _GeminiScreenState extends State<GeminiScreen> {
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
-    apiKey: 'AIzaSyAPbOupd1pvsGucTfkD514InEMKerrBmF8',
+    apiKey: dotenv.env['GEMINI_API_KEY'] ?? 'DEFAULT_API_KEY',
   );
 
   @override
