@@ -5,6 +5,9 @@ import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:image/image.dart' as img;
 import 'package:flutter/services.dart';
 import '../presentation/home/home2.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -56,6 +59,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    _fetchCityName();
   }
 
   @override
@@ -83,6 +87,67 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       // Process the image for disease detection
       File imageFile = File(image.path);
       _analyzeImage(imageFile);
+    }
+  }
+
+
+  String _cityName = "Fetching location..."; // Initial text
+
+  
+     // Fetch location when screen loads
+
+
+  // Handle location permission
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      setState(() {
+        _cityName = "Location disabled";
+      });
+      return false;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        setState(() {
+          _cityName = "Permission denied";
+        });
+        return false;
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      setState(() {
+        _cityName = "Permission denied forever";
+      });
+      return false;
+    }
+    return true;
+  }
+
+  // Fetch city name from location
+  Future<void> _fetchCityName() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) return;
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+      String? city = placemarks[0].locality;
+
+      setState(() {
+        _cityName = city != null && city.isNotEmpty ? city : "Unknown city";
+      });
+    } catch (e) {
+      setState(() {
+        _cityName = "Error: $e";
+      });
     }
   }
 
@@ -183,8 +248,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                     const Spacer(),
                     Row(
                       children: [
-                        const Text(
-                          'Balrampur', // Location
+                        Text(
+                          _cityName, // Location
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         const SizedBox(width: 4),

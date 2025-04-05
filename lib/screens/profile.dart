@@ -38,6 +38,7 @@ class _ProfileTabState extends State<ProfileTab> {
     _emailController.text = _profileData['email'];
     _phoneController.text = _profileData['phone'];
     _locationController.text = _profileData['location'];
+    
   }
 
   // Create light theme
