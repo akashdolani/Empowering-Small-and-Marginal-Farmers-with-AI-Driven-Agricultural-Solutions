@@ -168,13 +168,13 @@ class ToolDetailPage extends StatelessWidget {
   final String details;
 
   const ToolDetailPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.description,
     required this.price,
     required this.imageAsset,
     required this.details,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
