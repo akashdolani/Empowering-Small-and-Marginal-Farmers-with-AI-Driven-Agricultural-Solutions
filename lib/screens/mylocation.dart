@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 
-class CropManagementTab extends StatelessWidget {
-  const CropManagementTab({super.key});
+class MyLocationTab extends StatelessWidget {
+  const MyLocationTab({super.key});
 
   @override
   Widget build(BuildContext context) {

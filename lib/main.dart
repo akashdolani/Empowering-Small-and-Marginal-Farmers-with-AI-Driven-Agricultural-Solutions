@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:solutionchallenge/models/language_model.dart';
 import 'utils/app_localizations.dart';
-import 'screens/cropmanagement.dart';
+import 'screens/mylocation.dart';
 import 'screens/home.dart';
 import 'screens/faq.dart';
 import 'screens/hardware.dart';
@@ -931,7 +931,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const HomeTab(),
     const HardwareTab(),
     const FAQTab(),
-    const CropManagementTab(),
+    const MyLocationTab(),
     const ProfileTab(),
   ];
 
@@ -964,7 +964,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.agriculture),
-            label: 'My Crop',
+            label: 'My Location',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

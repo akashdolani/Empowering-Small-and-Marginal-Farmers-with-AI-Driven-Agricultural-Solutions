@@ -76,7 +76,9 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     if (prediction != null) {
       String readablePrediction = cleanPrediction(prediction);
       print('Prediction: $readablePrediction');
+      prediction = readablePrediction;
     }
+
 
     
 
@@ -469,11 +471,11 @@ class DiseaseResultScreen extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black,
+            color: Colors.white,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
