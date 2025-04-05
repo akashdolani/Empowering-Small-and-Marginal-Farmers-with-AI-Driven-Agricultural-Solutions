@@ -137,25 +137,16 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
-                        'assets/app_logo.jpg',
-                        height: 32,
-                        width: 22,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'KisanSahayak', // Your app name
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        'assets/final_applogo.PNG',
+                        height: 40,
+                        width: 65,
                       ),
                     ),
                     const Spacer(),
                     Row(
                       children: [
                         const Text(
-                          'Bengaluru', // Location
+                          'Balrampur', // Location
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

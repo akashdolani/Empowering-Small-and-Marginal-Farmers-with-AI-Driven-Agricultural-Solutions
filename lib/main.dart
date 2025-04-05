@@ -491,13 +491,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
-                          icon: Image.network(
-                            'https://cdn.cdnlogo.com/logos/g/35/google-icon.svg',
+                          icon: Image.asset(
+                            'assets/google_icon.webp',
                             height: 24,
                             width: 24,
                           ),
                           label: Text(
-                            appLocalizations.translate('signInWithGoogle') ?? 'Sign in with Google',
+                            appLocalizations.translate('Sign in') ?? 'Sign in with Google',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
