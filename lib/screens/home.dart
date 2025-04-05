@@ -12,6 +12,38 @@ class HomeTab extends StatefulWidget {
   State<HomeTab> createState() => _HomeTabState();
 }
 
+// 1. Define a data model for carousel items
+class CarouselItem {
+  final String imagePath;
+  final String title;
+  final String description;
+
+  CarouselItem({
+    required this.imagePath,
+    required this.title,
+    required this.description,
+  });
+}
+
+// 2. Create a list of carousel items with unique data
+final List<CarouselItem> carouselItems = [
+  CarouselItem(
+    imagePath: 'assets/images/images1.jpg', // Path to local asset
+    title: 'Crop Rotation Benefits',
+    description: 'Learn about sustainable farming techniques',
+  ),
+  CarouselItem(
+    imagePath: 'assets/images/images2.jpg',
+    title: 'New Irrigation System',
+    description: 'Save water with modern technology',
+  ),
+  CarouselItem(
+    imagePath: 'assets/images/images3.jpg',
+    title: 'Organic Fertilizers',
+    description: 'Boost yields naturally',
+  ),
+];
+
 class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _isExpanded = false;
@@ -54,16 +86,15 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   }
 
   String cleanPrediction(String rawPrediction) {
-  // Split the string by '___' to separate class and disease
-  List<String> parts = rawPrediction.split('___');
+    // Split the string by '___' to separate class and disease
+    List<String> parts = rawPrediction.split('___');
 
-  // Join the parts (usually crop and disease) with a space
-  String combined = parts.join(' ');
+    // Join the parts (usually crop and disease) with a space
+    String combined = parts.join(' ');
 
-  // Replace underscores with spaces
-  return combined.replaceAll('_', ' ');
-}
-
+    // Replace underscores with spaces
+    return combined.replaceAll('_', ' ');
+  }
 
   void _analyzeImage(File imageFile) async {
     // Initialize the detector
@@ -79,38 +110,41 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       prediction = readablePrediction;
     }
 
-
-    
-
     // Set a default confidence value (since TFLite models usually return probabilities)
-    double confidence = 0.90; // Modify this based on actual model output if needed
+    double confidence =
+        0.90; // Modify this based on actual model output if needed
 
     // Define treatment suggestions (you can extend this logic)
     Map<String, String> treatments = {
       "Apple___Apple_scab": "Use fungicides like captan or mancozeb.",
-      "Apple___Black_rot": "Remove infected fruit and apply copper-based sprays.",
-      "Corn_(maize)___Common_rust_": "Use resistant hybrids and fungicides if needed.",
-      "Tomato___Early_blight": "Apply fungicides and ensure good air circulation.",
-      "Tomato___Late_blight": "Use copper-based fungicides and remove affected leaves.",
-      "Tomato___healthy": "No treatment needed, the plant is healthy!"
+      "Apple___Black_rot":
+          "Remove infected fruit and apply copper-based sprays.",
+      "Corn_(maize)___Common_rust_":
+          "Use resistant hybrids and fungicides if needed.",
+      "Tomato___Early_blight":
+          "Apply fungicides and ensure good air circulation.",
+      "Tomato___Late_blight":
+          "Use copper-based fungicides and remove affected leaves.",
+      "Tomato___healthy": "No treatment needed, the plant is healthy!",
     };
 
-    String treatment = treatments[prediction] ?? "Consult an expert for treatment advice.";
+    String treatment =
+        treatments[prediction] ?? "Consult an expert for treatment advice.";
 
     // Navigate to the result screen with real prediction data
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DiseaseResultScreen(
-          imagePath: imageFile.path,
-          diseaseName: prediction ?? "Unknown Disease",
-          confidence: confidence,
-          treatment: treatment,
-        ),
+        builder:
+            (context) => DiseaseResultScreen(
+              imagePath: imageFile.path,
+              diseaseName: prediction ?? "Unknown Disease",
+              confidence: confidence,
+              treatment: treatment,
+            ),
       ),
     );
   }
-
 
   @override
   @override
@@ -121,19 +155,22 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [const Color.fromARGB(255, 99, 194, 104), const Color.fromARGB(255, 152, 175, 153)],
+            colors: [
+              const Color.fromARGB(255, 99, 194, 104),
+              const Color.fromARGB(255, 152, 175, 153),
+            ],
           ),
         ),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-// App Bar with Logo and Name
+              // App Bar with Logo and Name
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-// Replace with your actual logo
+                    // Replace with your actual logo
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
@@ -147,10 +184,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                       children: [
                         const Text(
                           'Balrampur', // Location
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         const SizedBox(width: 4),
                         const Icon(
@@ -173,7 +207,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                   ],
                 ),
               ),
-                     // Scrollable content
+              // Scrollable content
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -195,18 +229,24 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                               ),
                             ),
                             const SizedBox(height: 8),
+                            // 3. Update your SizedBox with asset images
                             SizedBox(
                               height: 160,
                               child: PageView.builder(
-                                controller: PageController(viewportFraction: 0.9),
-                                itemCount: 3,
+                                controller: PageController(
+                                  viewportFraction: 0.9,
+                                ),
+                                itemCount: carouselItems.length,
                                 itemBuilder: (context, index) {
+                                  final item = carouselItems[index];
                                   return Container(
                                     margin: const EdgeInsets.only(right: 10),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(16),
-                                      image: const DecorationImage(
-                                        image: NetworkImage('/api/placeholder/400/320'),
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                          item.imagePath,
+                                        ), // Use AssetImage instead of NetworkImage
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -224,11 +264,13 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                       ),
                                       padding: const EdgeInsets.all(16.0),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'News Title ${index + 1}: Important farming update',
+                                            item.title,
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -237,9 +279,11 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            'Tap to read more about this update...',
+                                            item.description,
                                             style: TextStyle(
-                                              color: Colors.white.withOpacity(0.8),
+                                              color: Colors.white.withOpacity(
+                                                0.8,
+                                              ),
                                               fontSize: 12,
                                             ),
                                           ),
@@ -287,27 +331,46 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: 3,
-                                separatorBuilder: (context, index) => Divider(
-                                  height: 1,
-                                  color: Colors.grey.shade200,
-                                ),
+                                separatorBuilder:
+                                    (context, index) => Divider(
+                                      height: 1,
+                                      color: Colors.grey.shade200,
+                                    ),
                                 itemBuilder: (context, index) {
                                   final tasks = [
-                                    {'title': 'Water wheat field', 'icon': Icons.water_drop, 'color': Colors.blue},
-                                    {'title': 'Apply pesticides', 'icon': Icons.pest_control, 'color': Colors.orange},
-                                    {'title': 'Harvest corn', 'icon': Icons.agriculture, 'color': Colors.green},
+                                    {
+                                      'title': 'Water wheat field',
+                                      'icon': Icons.water_drop,
+                                      'color': Colors.blue,
+                                    },
+                                    {
+                                      'title': 'Apply pesticides',
+                                      'icon': Icons.pest_control,
+                                      'color': Colors.orange,
+                                    },
+                                    {
+                                      'title': 'Harvest corn',
+                                      'icon': Icons.agriculture,
+                                      'color': Colors.green,
+                                    },
                                   ];
 
                                   return ListTile(
                                     leading: CircleAvatar(
-                                      backgroundColor: tasks[index]['color'] as Color,
+                                      backgroundColor:
+                                          tasks[index]['color'] as Color,
                                       child: Icon(
                                         tasks[index]['icon'] as IconData,
                                         color: Colors.white,
                                       ),
                                     ),
-                                    title: Text(tasks[index]['title'] as String),
-                                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                                    title: Text(
+                                      tasks[index]['title'] as String,
+                                    ),
+                                    trailing: const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                    ),
                                   );
                                 },
                               ),
@@ -378,6 +441,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       ),
     );
   }
+
   Widget _buildFeatureCard({
     required String title,
     required String description,
@@ -406,11 +470,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             CircleAvatar(
               radius: 24,
               backgroundColor: color.withOpacity(0.2),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -426,10 +486,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                   ),
                   Text(
                     description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
               ),
@@ -440,6 +497,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       ),
     );
   }
+
   void _showImageSourceDialog() {
     showDialog(
       context: context,
@@ -512,10 +570,7 @@ class DiseaseResultScreen extends StatelessWidget {
             const SizedBox(height: 24),
             const Text(
               'Analysis Results:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildResultCard(
@@ -557,10 +612,7 @@ class DiseaseResultScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Save To History',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -591,11 +643,7 @@ class DiseaseResultScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: 32,
-          ),
+          Icon(icon, color: color, size: 32),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -603,10 +651,7 @@ class DiseaseResultScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -624,7 +669,6 @@ class DiseaseResultScreen extends StatelessWidget {
     );
   }
 }
-
 
 class PlantDiseaseDetector {
   late tfl.Interpreter _interpreter;
@@ -666,12 +710,14 @@ class PlantDiseaseDetector {
     'Tomato___Target_Spot',
     'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
     'Tomato___Tomato_mosaic_virus',
-    'Tomato___healthy'
+    'Tomato___healthy',
   ];
 
   Future<void> loadModel() async {
     try {
-      _interpreter = await tfl.Interpreter.fromAsset('assets/plant_disease_detection.tflite');
+      _interpreter = await tfl.Interpreter.fromAsset(
+        'assets/plant_disease_detection.tflite',
+      );
     } catch (e) {
       print('Failed to load model: $e');
     }
@@ -695,26 +741,25 @@ class PlantDiseaseDetector {
       // Prepare input tensor [1, 224, 224, 3]
       var input = List.generate(
         1,
-            (_) => List.generate(
+        (_) => List.generate(
           224,
-              (y) => List.generate(
-            224,
-                (x) {
-              var pixel = resizedImage.getPixel(x, y);
-              // Convert pixel values to float and normalize
-              return [
-                img.getRed(pixel) / 255.0,
-                img.getGreen(pixel) / 255.0,
-                img.getBlue(pixel) / 255.0
-              ];
-            },
-          ),
+          (y) => List.generate(224, (x) {
+            var pixel = resizedImage.getPixel(x, y);
+            // Convert pixel values to float and normalize
+            return [
+              img.getRed(pixel) / 255.0,
+              img.getGreen(pixel) / 255.0,
+              img.getBlue(pixel) / 255.0,
+            ];
+          }),
         ),
       );
 
       // Prepare output tensor [1, num_classes]
-      var output = List.filled(1 * classNames.length, 0.0)
-          .reshape([1, classNames.length]);
+      var output = List.filled(
+        1 * classNames.length,
+        0.0,
+      ).reshape([1, classNames.length]);
 
       // Run inference
       _interpreter.run(input, output);
