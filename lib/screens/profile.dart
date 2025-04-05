@@ -15,7 +15,7 @@ class _ProfileTabState extends State<ProfileTab> {
     'name': 'Farmer John',
     'email': 'farmer.john@example.com',
     'phone': '+91 9876543210',
-    'location': 'Maharashtra, India',
+    'location': 'Balamrampur, India',
     'farmSize': '5 acres',
   };
 

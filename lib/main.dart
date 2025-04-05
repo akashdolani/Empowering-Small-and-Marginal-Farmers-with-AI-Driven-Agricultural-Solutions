@@ -929,7 +929,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const HomeTab(),
-    const HardwareTab(),
+    const ShopTab(),
     const FAQTab(),
     const MyLocationTab(),
     const ProfileTab(),
@@ -955,8 +955,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.hardware),
-            label: 'Hardware',
+            icon: Icon(Icons.shop),
+            label: 'Shop',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.question_answer),
