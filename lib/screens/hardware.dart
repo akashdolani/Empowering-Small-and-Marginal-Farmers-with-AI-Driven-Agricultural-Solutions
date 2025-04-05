@@ -166,7 +166,7 @@ class _ShopTabState extends State<ShopTab> {
             name: 'Hand Tools',
             description: 'Basic farming tools for manual work',
             price: '₹500 - ₹2000',
-            imageAsset: 'assets/hand_tools.png',
+            imageAsset: 'assets/hand_tools.jpg',
             details: 'Hand tools include shovels, hoes, pruning shears, and other manual implements essential for basic farming tasks.',
             isCrop: false,
           ),
@@ -175,16 +175,16 @@ class _ShopTabState extends State<ShopTab> {
             name: 'Power Tools',
             description: 'Efficient tools for faster work',
             price: '₹2000 - ₹15000',
-            imageAsset: 'assets/power_tools.png',
+            imageAsset: 'assets/power_tools.jpg',
             details: 'Power tools include tillers, chainsaws, and trimmers that increase efficiency and reduce manual labor.',
             isCrop: false,
           ),
           _buildToolItem(
-            context: context,
+           context: context,
             name: 'IoT Sensors',
             description: 'Smart monitoring for your farm',
             price: '₹1500 - ₹5000',
-            imageAsset: 'assets/iot_sensors.png',
+            imageAsset: 'assets/iot_sensors.jpg',
             details: 'IoT sensors monitor soil moisture, temperature, and other important parameters to optimize crop growth.',
             isCrop: false,
           ),
@@ -193,7 +193,7 @@ class _ShopTabState extends State<ShopTab> {
             name: 'Irrigation Systems',
             description: 'Water management solutions',
             price: '₹3000 - ₹25000',
-            imageAsset: 'assets/irrigation.png',
+            imageAsset: 'assets/irrigation.jpg',
             details: 'Irrigation systems include drip, sprinkler, and other water distribution technologies for efficient water usage.',
             isCrop: false,
           ),
@@ -234,7 +234,7 @@ class _ShopTabState extends State<ShopTab> {
             name: 'Wheat Seeds',
             description: 'High-yield wheat variety',
             price: '₹200 - ₹500 per kg',
-            imageAsset: 'assets/wheat_seeds.png',
+            imageAsset: 'assets/wheat_seeds.jpg',
             details: 'Drought-resistant wheat variety suitable for most soil types. Growing season: 100-120 days.',
             isCrop: true,
             marketPrice: '₹2200 - ₹2400 per quintal',
@@ -246,7 +246,7 @@ class _ShopTabState extends State<ShopTab> {
             name: 'Rice Seeds',
             description: 'Premium paddy seeds',
             price: '₹300 - ₹700 per kg',
-            imageAsset: 'assets/rice_seeds.png',
+            imageAsset: 'assets/rice_seeds.jpg',
             details: 'High-yielding paddy seeds suitable for wetland cultivation.',
             isCrop: true,
             marketPrice: '₹1800 - ₹2100 per quintal',
@@ -258,7 +258,7 @@ class _ShopTabState extends State<ShopTab> {
             name: 'Cotton Seeds',
             description: 'BT cotton seeds',
             price: '₹800 - ₹1200 per kg',
-            imageAsset: 'assets/cotton_seeds.png',
+            imageAsset: 'assets/cotton_seeds.jpg',
             details: 'BT cotton seeds with pest resistance and high yield potential.',
             isCrop: true,
             marketPrice: '₹6000 - ₹6500 per quintal',
@@ -270,7 +270,7 @@ class _ShopTabState extends State<ShopTab> {
             name: 'Soybean Seeds',
             description: 'High protein variety',
             price: '₹250 - ₹600 per kg',
-            imageAsset: 'assets/soybean_seeds.png',
+            imageAsset: 'assets/soybean_seeds.webp',
             details: 'High protein soybean seeds with good drought tolerance.',
             isCrop: true,
             marketPrice: '₹3800 - ₹4200 per quintal',
@@ -379,13 +379,13 @@ class ToolDetailPage extends StatelessWidget {
   final String details;
 
   const ToolDetailPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.description,
     required this.price,
     required this.imageAsset,
     required this.details,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -599,7 +599,7 @@ class CropDetailPage extends StatelessWidget {
   final String soilType;
 
   const CropDetailPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.description,
     required this.price,
@@ -608,7 +608,7 @@ class CropDetailPage extends StatelessWidget {
     required this.marketPrice,
     required this.growingPeriod,
     required this.soilType,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

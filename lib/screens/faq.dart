@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FAQTab extends StatelessWidget {
@@ -9,9 +10,12 @@ class FAQTab extends StatelessWidget {
       appBar: AppBar(
         title: const Text('FAQ'),
         centerTitle: true,
-        backgroundColor:  Color.fromARGB(255, 99, 194, 104),
+        backgroundColor: Color.fromARGB(255, 99, 194, 104),
       ),
+      // Apply the background color to the entire Scaffold
+      backgroundColor: Color.fromARGB(255, 99, 194, 104),
       body: Container(
+        // This container now covers the entire body with the gradient
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -19,19 +23,22 @@ class FAQTab extends StatelessWidget {
             colors: [const Color.fromARGB(255, 99, 194, 104), const Color.fromARGB(255, 152, 175, 153)],
           ),
         ),
+        // Make container fill the entire available space
+        width: double.infinity,
+        height: double.infinity,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
                 ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          'assets/final_applogo.PNG',
-                          height: 40,
-                          width: 175,
-                        ),
-                      ),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/final_applogo.PNG',
+                    height: 40,
+                    width: 175,
+                  ),
+                ),
                 const SizedBox(height: 24),
                 _buildFaqItem(
                   question: 'How to use soil moisture sensors?',

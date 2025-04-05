@@ -75,6 +75,14 @@ flutter:
     - assets/final_applogo.PNG
     - assets/google_icon.webp
     - assets/images/
+    - assets/hand_tools.jpg
+    - assets/iot_sensors.jpg
+    - assets/irrigation.jpg
+    - assets/power_tools.jpg
+    - assets/cotton_seeds.jpg
+    - assets/wheat_seeds.jpg
+    - assets/rice_seeds.jpg
+    - assets/soybean_seeds.webp
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
