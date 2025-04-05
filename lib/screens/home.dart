@@ -112,7 +112,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                     const Text(
                       'Bengaluru',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -120,14 +120,14 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                     const SizedBox(width: 8),
                     const Icon(
                       Icons.location_on,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                     const Spacer(),
                     CircleAvatar(
-                      backgroundColor: Colors.white.withOpacity(0.3),
+                      backgroundColor: Colors.black,
                       child: const Icon(
                         Icons.notifications,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -139,7 +139,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                     Text(
                       '29°',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 72,
                         fontWeight: FontWeight.bold,
                       ),
@@ -147,7 +147,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                     Text(
                       'Cloudy',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 24,
                       ),
                     ),
@@ -287,11 +287,11 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.black,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black,
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -458,11 +458,11 @@ class DiseaseResultScreen extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
