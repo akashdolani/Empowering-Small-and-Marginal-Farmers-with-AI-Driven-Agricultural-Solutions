@@ -53,6 +53,18 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     }
   }
 
+  String cleanPrediction(String rawPrediction) {
+  // Split the string by '___' to separate class and disease
+  List<String> parts = rawPrediction.split('___');
+
+  // Join the parts (usually crop and disease) with a space
+  String combined = parts.join(' ');
+
+  // Replace underscores with spaces
+  return combined.replaceAll('_', ' ');
+}
+
+
   void _analyzeImage(File imageFile) async {
     // Initialize the detector
     PlantDiseaseDetector detector = PlantDiseaseDetector();
@@ -60,6 +72,13 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
     // Process the image and get the prediction
     String? prediction = await detector.processImage(imageFile.path);
+
+    if (prediction != null) {
+      String readablePrediction = cleanPrediction(prediction);
+      print('Prediction: $readablePrediction');
+    }
+
+    
 
     // Set a default confidence value (since TFLite models usually return probabilities)
     double confidence = 0.90; // Modify this based on actual model output if needed
