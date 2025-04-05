@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:image/image.dart' as img;
 import 'package:flutter/services.dart';
+import '../presentation/home/home2.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -425,6 +426,13 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                           color: Colors.purple,
                           onTap: () {
                             // Navigate to AI chat screen
+                            // Navigate to AI chat screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const GeminiScreen(),
+                              ),
+                            );
                           },
                           fullWidth: true,
                         ),
