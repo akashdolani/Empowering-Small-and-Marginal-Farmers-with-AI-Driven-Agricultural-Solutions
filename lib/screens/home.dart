@@ -122,14 +122,6 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                       Icons.location_on,
                       color: Colors.black,
                     ),
-                    const Spacer(),
-                    CircleAvatar(
-                      backgroundColor: Colors.black,
-                      child: const Icon(
-                        Icons.notifications,
-                        color: Colors.black,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -287,11 +279,11 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
+              color: Colors.white,
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
