@@ -56,8 +56,8 @@ class AuthService {
         password: password,
       );
       return userCredential;
-    } on FirebaseAuthException catch (e) {
-      throw e;
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
@@ -69,8 +69,8 @@ class AuthService {
         password: password,
       );
       return userCredential;
-    } on FirebaseAuthException catch (e) {
-      throw e;
+    } on FirebaseAuthException {
+      rethrow;
     }
   }
 
@@ -158,7 +158,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Container(
+                  SizedBox(
                     height: 300,
                     width: double.infinity,
                     child: ListView.builder(
@@ -535,7 +535,7 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text(appLocalizations.translate('chooseLanguage')),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
               shrinkWrap: true,

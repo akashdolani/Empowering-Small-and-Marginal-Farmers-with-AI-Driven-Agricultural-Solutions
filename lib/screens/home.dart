@@ -361,12 +361,12 @@ class DiseaseResultScreen extends StatelessWidget {
   final String treatment;
 
   const DiseaseResultScreen({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.diseaseName,
     required this.confidence,
     required this.treatment,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solutionchallenge/models/language_model.dart';
-import 'package:solutionchallenge/utils/app_localizations.dart';
 
 class ProfileTab extends StatefulWidget {
-  const ProfileTab({Key? key}) : super(key: key);
+  const ProfileTab({super.key});
 
   @override
   _ProfileTabState createState() => _ProfileTabState();
@@ -23,7 +22,7 @@ class _ProfileTabState extends State<ProfileTab> {
   // Settings
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
-  String _language = 'English';
+  final String _language = 'English';
 
   // Edit profile controllers
   final TextEditingController _nameController = TextEditingController();
