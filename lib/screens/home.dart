@@ -113,226 +113,342 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage('/api/placeholder/400/320'),
-            fit: BoxFit.cover,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.green.shade300, Colors.green.shade100],
           ),
         ),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+// App Bar with Logo and Name
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    const Text(
-                      'Bengaluru',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+// Replace with your actual logo
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset(
+                        'assets/app_logo.jpg',
+                        height: 32,
+                        width: 22,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(
-                      Icons.location_on,
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
-              ),
-              const Center(
-                child: Column(
-                  children: [
-                    Text(
-                      '29°',
+                    const Text(
+                      'KisanSahayak', // Your app name
                       style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 72,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                    Text(
-                      'Cloudy',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 24,
+                    const Spacer(),
+                    Row(
+                      children: [
+                        const Text(
+                          'Bengaluru', // Location
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 8),
+                    CircleAvatar(
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      radius: 18,
+                      child: const Icon(
+                        Icons.notifications,
+                        color: Colors.white,
+                        size: 18,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  children: [
-                    _buildMenuItem(
-                      title: 'Hardware',
-                      icon: Icons.hardware,
-                      color: Colors.blue,
-                      onTap: () {
-                        // Navigate to Hardware screen
-                      },
-                    ),
-                    _buildMenuItem(
-                      title: 'FAQ',
-                      icon: Icons.question_answer,
-                      color: Colors.orange,
-                      onTap: () {
-                        // Navigate to FAQ screen
-                      },
-                    ),
-                    _buildMenuItem(
-                      title: 'My Crop',
-                      icon: Icons.eco,
-                      color: Colors.green,
-                      onTap: () {
-                        // Navigate to My Crop screen
-                      },
-                    ),
-                    _buildMenuItem(
-                      title: 'Krishi Gyan',
-                      icon: Icons.auto_stories,
-                      color: Colors.purple,
-                      onTap: () {
-                        // Navigate to Krishi Gyan screen
-                      },
-                    ),
-                  ],
+                     // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Carousel for Latest News
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Latest Updates',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              height: 160,
+                              child: PageView.builder(
+                                controller: PageController(viewportFraction: 0.9),
+                                itemCount: 3,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    margin: const EdgeInsets.only(right: 10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      image: const DecorationImage(
+                                        image: NetworkImage('/api/placeholder/400/320'),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.topCenter,
+                                          colors: [
+                                            Colors.black.withOpacity(0.7),
+                                            Colors.transparent,
+                                          ],
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'News Title ${index + 1}: Important farming update',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Tap to read more about this update...',
+                                            style: TextStyle(
+                                              color: Colors.white.withOpacity(0.8),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Schedule Window
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Today\'s Tasks',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: 3,
+                                separatorBuilder: (context, index) => Divider(
+                                  height: 1,
+                                  color: Colors.grey.shade200,
+                                ),
+                                itemBuilder: (context, index) {
+                                  final tasks = [
+                                    {'title': 'Water wheat field', 'icon': Icons.water_drop, 'color': Colors.blue},
+                                    {'title': 'Apply pesticides', 'icon': Icons.pest_control, 'color': Colors.orange},
+                                    {'title': 'Harvest corn', 'icon': Icons.agriculture, 'color': Colors.green},
+                                  ];
+
+                                  return ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: tasks[index]['color'] as Color,
+                                      child: Icon(
+                                        tasks[index]['icon'] as IconData,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    title: Text(tasks[index]['title'] as String),
+                                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Crop Disease Detection and Field Scanning in a Row
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildFeatureCard(
+                                title: 'Crop Disease',
+                                description: 'Analyze plant health',
+                                icon: Icons.camera_alt,
+                                color: Colors.redAccent,
+                                onTap: () {
+                                  _showImageSourceDialog();
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildFeatureCard(
+                                title: 'Field Scanning',
+                                description: 'Monitor your fields',
+                                icon: Icons.landscape,
+                                color: Colors.green,
+                                onTap: () {
+                                  // Navigate to field scanning
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Ask Our AI Section
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: _buildFeatureCard(
+                          title: 'Ask Our AI',
+                          description: 'Get personalized farming advice',
+                          icon: Icons.chat,
+                          color: Colors.purple,
+                          onTap: () {
+                            // Navigate to AI chat screen
+                          },
+                          fullWidth: true,
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Camera button
-          ScaleTransition(
-            scale: _animationController.drive(
-              Tween<double>(begin: 0.0, end: 1.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: FloatingActionButton(
-                heroTag: 'camera',
-                backgroundColor: Colors.green,
-                mini: true,
-                onPressed: () {
-                  _showImageSourceDialog();
-                },
-                child: const Icon(Icons.camera_alt),
-              ),
-            ),
-          ),
-
-          // Analyze button
-          ScaleTransition(
-            scale: _animationController.drive(
-              Tween<double>(begin: 0.0, end: 1.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: FloatingActionButton(
-                heroTag: 'analyze',
-                backgroundColor: Colors.orange,
-                mini: true,
-                onPressed: () {
-                  // Do nothing for now
-                },
-                child: const Icon(Icons.analytics),
-              ),
-            ),
-          ),
-
-          // History button
-          ScaleTransition(
-            scale: _animationController.drive(
-              Tween<double>(begin: 0.0, end: 1.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: FloatingActionButton(
-                heroTag: 'history',
-                backgroundColor: Colors.blue,
-                mini: true,
-                onPressed: () {
-                  // Do nothing for now
-                },
-                child: const Icon(Icons.history),
-              ),
-            ),
-          ),
-
-          // Main expandable button
-          FloatingActionButton(
-            backgroundColor: Colors.redAccent,
-            onPressed: _toggleExpand,
-            child: AnimatedIcon(
-              icon: AnimatedIcons.menu_close,
-              progress: _animationController,
-            ),
-          ),
-        ],
-      ),
     );
   }
-
-  Widget _buildMenuItem({
+  Widget _buildFeatureCard({
     required String title,
+    required String description,
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
+    bool fullWidth = false,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.white,
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
           children: [
-            Icon(
-              icon,
-              size: 40,
-              color: color,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: color.withOpacity(0.2),
+              child: Icon(
+                icon,
                 color: color,
+                size: 24,
               ),
             ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16),
           ],
         ),
       ),
     );
   }
-
   void _showImageSourceDialog() {
     showDialog(
       context: context,
