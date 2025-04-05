@@ -32,7 +32,7 @@ class BhoomiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Bhoomi App',
+      title: 'KisanSahayak',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
@@ -142,9 +142,9 @@ class LanguageSelectionScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Bhoomi App',
+                    'KisanSahayak',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.green,
                     ),

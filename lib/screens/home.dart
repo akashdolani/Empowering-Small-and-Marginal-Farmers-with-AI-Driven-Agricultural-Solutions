@@ -121,7 +121,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.green.shade300, Colors.green.shade100],
+            colors: [const Color.fromARGB(255, 99, 194, 104), const Color.fromARGB(255, 152, 175, 153)],
           ),
         ),
         child: SafeArea(
@@ -139,7 +139,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                       child: Image.asset(
                         'assets/final_applogo.PNG',
                         height: 40,
-                        width: 65,
+                        width: 175,
                       ),
                     ),
                     const Spacer(),

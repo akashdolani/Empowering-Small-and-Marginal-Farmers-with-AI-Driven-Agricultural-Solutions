@@ -8,7 +8,7 @@ class AppLocalizations {
 
   static final Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'appTitle': 'Bhoomi App',
+      'appTitle': 'KisanSahayak',
       'login': 'Login',
       'register': 'Register',
       'forgotPassword': 'Forgot Password?',
@@ -26,7 +26,7 @@ class AppLocalizations {
       'changeLanguage': 'Change Language',
     },
     'hi': {
-      'appTitle': 'भूमि ऐप',
+      'appTitle': 'किसानसहायक',
       'login': 'लॉगिन',
       'register': 'रजिस्टर',
       'forgotPassword': 'पासवर्ड भूल गए?',
