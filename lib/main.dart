@@ -1045,7 +1045,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             width: 24,
                           ),
                           label: Text(
-                            appLocalizations.translate('signUpGoogle') ??
+                            appLocalizations.translate('Sign Up') ??
                                 'Sign Up',
                             style: const TextStyle(
                               fontSize: 16,
