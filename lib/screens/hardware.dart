@@ -18,35 +18,49 @@ class _ShopTabState extends State<ShopTab> {
       appBar: AppBar(
         title: const Text('Shop'),
         centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 99, 194, 104),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // App logo
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/final_applogo.PNG',
-                  height: 40,
-                  width: 175,
+      backgroundColor: Color.fromARGB(255, 99, 194, 104),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [const Color.fromARGB(255, 99, 194, 104), const Color.fromARGB(255, 152, 175, 153)],
+          ),
+        ),
+        // Make container fill the entire available space
+        width: double.infinity,
+        height: double.infinity,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // App logo
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/final_applogo.PNG',
+                    height: 40,
+                    width: 175,
+                  ),
                 ),
               ),
-            ),
-            
-            // Category selection buttons
-            if (_selectedCategory.isEmpty)
-              _buildCategorySelection(),
-            
-            // Show farming tools if selected
-            if (_selectedCategory == 'Farming Tools')
-              _buildFarmingToolsList(context),
-            
-            // Show crops if selected
-            if (_selectedCategory == 'Crops')
-              _buildCropsList(context),
-          ],
+              
+              // Category selection buttons
+              if (_selectedCategory.isEmpty)
+                _buildCategorySelection(),
+              
+              // Show farming tools if selected
+              if (_selectedCategory == 'Farming Tools')
+                _buildFarmingToolsList(context),
+              
+              // Show crops if selected
+              if (_selectedCategory == 'Crops')
+                _buildCropsList(context),
+            ],
+          ),
         ),
       ),
     );
