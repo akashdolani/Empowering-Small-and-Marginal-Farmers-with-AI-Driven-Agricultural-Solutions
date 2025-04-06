@@ -84,6 +84,7 @@ flutter:
     - assets/wheat_seeds.jpg
     - assets/rice_seeds.jpg
     - assets/soybean_seeds.webp
+    - assets/crop_data.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
