@@ -8,7 +8,7 @@ import 'utils/app_localizations.dart';
 import 'screens/mylocation.dart';
 import 'screens/home.dart';
 import 'screens/faq.dart';
-import 'screens/hardware.dart';
+import 'screens/store.dart';
 import 'screens/profile.dart';
 import 'firebase_options.dart'; // You need to generate this file using FlutterFire CLI
 import 'package:flutter_dotenv/flutter_dotenv.dart';

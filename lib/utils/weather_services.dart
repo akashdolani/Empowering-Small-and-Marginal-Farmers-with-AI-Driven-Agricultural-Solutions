@@ -1,9 +1,10 @@
 // weather_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class WeatherService {
-  static const String apiKey = '1e8ce387964c7742bf454f69c3aff996'; // Replace with your API key
+  static String apiKey = dotenv.env['WEATHER_API_KEY'] ?? 'DEFAULT_API_KEY'; // Replace with your API key
   static const String baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
   Future<Map<String, dynamic>> fetchWeather(double lat, double lon) async {

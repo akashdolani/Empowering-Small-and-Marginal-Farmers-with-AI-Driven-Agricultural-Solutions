@@ -525,6 +525,23 @@ class ToolDetailPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _showPurchaseDialog(context, name, price, 'Sell');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: const Text(
+                        'Sell',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -535,61 +552,80 @@ class ToolDetailPage extends StatelessWidget {
   }
 
   void _showPurchaseDialog(BuildContext context, String name, String price, String type) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(type == 'buy' ? 'Purchase Confirmation' : 'Rental Confirmation'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('You are about to ${type == 'buy' ? 'purchase' : 'rent'} $name'),
-            const SizedBox(height: 8),
-            if (type == 'rent')
-              const Text('Rental period: 7 days'),
-            const SizedBox(height: 8),
-            Text('Amount: ${type == 'rent' ? _calculateRentalPrice(price) : price}'),
-          ],
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        type == 'buy'
+            ? 'Purchase Confirmation'
+            : type == 'rent'
+                ? 'Rental Confirmation'
+                : 'Sell Confirmation',
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            type == 'buy'
+                ? 'You are about to purchase $name'
+                : type == 'rent'
+                    ? 'You are about to rent $name'
+                    : 'You are about to sell $name',
+          ),
+          const SizedBox(height: 8),
+          if (type == 'rent')
+            const Text('Rental period: 7 days')
+          else if (type == 'sell')
+            const Text('Item will be picked up within 24 hours'),
+          const SizedBox(height: 8),
+          Text(
+            'Amount: ${type == 'rent' ? _calculateRentalPrice(price) : price}',
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showSuccessDialog(context, type);
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
-    );
-  }
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _showSuccessDialog(context, type);
+          },
+          child: const Text('Confirm'),
+        ),
+      ],
+    ),
+  );
+}
 
-  void _showSuccessDialog(BuildContext context, String type) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Success!'),
-        content: Text(type == 'buy' 
-          ? 'Your purchase was successful. The item will be delivered soon.' 
-          : 'Your rental was successful. The item will be available for pickup soon.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Ok'),
-          ),
-        ],
+void _showSuccessDialog(BuildContext context, String type) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Success!'),
+      content: Text(
+        type == 'buy'
+            ? 'Your purchase was successful. The item will be delivered soon.'
+            : type == 'rent'
+                ? 'Your rental was successful. The item will be available for pickup soon.'
+                : 'Your sell request was successful. The item will be picked up soon.',
       ),
-    );
-  }
-
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Ok'),
+        ),
+      ],
+    ),
+  );
+}
   String _calculateRentalPrice(String price) {
     // Extract the lower price from the range (e.g., "₹500 - ₹2000" → "₹500")
     final lowerPrice = price.split(' - ')[0];
@@ -662,7 +698,7 @@ class CropDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Crop name and price
               Text(
                 name,
@@ -681,7 +717,7 @@ class CropDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Market Price Info Card
               Card(
                 color: Colors.amber.shade50,
@@ -726,7 +762,7 @@ class CropDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Crop description
               const Text(
                 'Description',
@@ -741,7 +777,7 @@ class CropDetailPage extends StatelessWidget {
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
-              
+
               // Detailed information
               const Text(
                 'Details',
@@ -756,17 +792,17 @@ class CropDetailPage extends StatelessWidget {
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
-              
+
               // Growing information
               _buildInfoItem('Growing Period', growingPeriod, Icons.calendar_today),
               _buildInfoItem('Recommended Soil Type', soilType, Icons.landscape),
-              
+
               const SizedBox(height: 32),
-              
+
               // Buy option
               ElevatedButton(
                 onPressed: () {
-                  _showPurchaseDialog(context);
+                  _showPurchaseDialog(context, name, price, 'buy');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -776,6 +812,25 @@ class CropDetailPage extends StatelessWidget {
                 ),
                 child: const Text(
                   'Purchase Seeds',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Sell option
+              ElevatedButton(
+                onPressed: () {
+                  _showPurchaseDialog(context, name, price, 'sell');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text(
+                  'Sell Seeds',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -809,28 +864,29 @@ class CropDetailPage extends StatelessWidget {
     );
   }
 
-  void _showPurchaseDialog(BuildContext context) {
+  void _showPurchaseDialog(BuildContext context, String name, String price, String type) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Purchase Confirmation'),
+        title: Text(
+          type == 'buy'
+              ? 'Purchase Confirmation'
+              : 'Sell Confirmation', // No 'rent' here, only buy/sell
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('You are about to purchase $name'),
-            const SizedBox(height: 8),
-            Text('Price: $price'),
-            const SizedBox(height: 8),
-            const Text('Quantity:'),
-            const SizedBox(height: 4),
-            TextField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Enter quantity in kg',
-                border: OutlineInputBorder(),
-              ),
+            Text(
+              type == 'buy'
+                  ? 'You are about to purchase seeds for $name'
+                  : 'You are about to sell seeds for $name',
             ),
+            const SizedBox(height: 8),
+            if (type == 'sell')
+              const Text('Seeds will be picked up within 24 hours'),
+            const SizedBox(height: 8),
+            Text('Amount: $price'), // For simplicity, using the same price
           ],
         ),
         actions: [
@@ -843,7 +899,7 @@ class CropDetailPage extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _showSuccessDialog(context);
+              _showSuccessDialog(context, type);
             },
             child: const Text('Confirm'),
           ),
@@ -852,12 +908,16 @@ class CropDetailPage extends StatelessWidget {
     );
   }
 
-  void _showSuccessDialog(BuildContext context) {
+  void _showSuccessDialog(BuildContext context, String type) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Success!'),
-        content: const Text('Your purchase was successful. The seeds will be delivered soon.'),
+        content: Text(
+          type == 'buy'
+              ? 'Your purchase was successful. The seeds will be delivered soon.'
+              : 'Your sell request was successful. The seeds will be picked up soon.',
+        ),
         actions: [
           TextButton(
             onPressed: () {
