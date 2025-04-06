@@ -24,8 +24,8 @@ class WeatherService {
       return {
         "temperature": data['main']['temp'],
         "description": data['weather'][0]['description'],
-        "humidity": humidity,      // Added humidity data
-        "rainfall": rainfall,      // Added rainfall data
+        "humidity": double.parse(humidity.toStringAsFixed(2)),
+        "rainfall": double.parse(rainfall.toStringAsFixed(2)),
       };
     } else {
       throw Exception('Failed to load weather data');
