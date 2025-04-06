@@ -110,6 +110,8 @@ class AuthService {
     }
   }
 
+  User? get currentUser => _auth.currentUser;
+
   // Sign out
   Future<void> signOut() async {
     await _googleSignIn.signOut();

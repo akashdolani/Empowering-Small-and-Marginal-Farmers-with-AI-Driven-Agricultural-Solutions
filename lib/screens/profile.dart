@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solutionchallenge/models/language_model.dart';
+import '../../main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -10,7 +12,7 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
-  // User profile data
+
   final Map<String, dynamic> _profileData = {
     'name': 'Farmer John',
     'email': 'farmer.john@example.com',
@@ -19,25 +21,29 @@ class _ProfileTabState extends State<ProfileTab> {
     'farmSize': '5 acres',
   };
 
+  final AuthService _authService = AuthService();
+
+  
+
   // Settings
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
-  final String _language = 'English';
 
   // Edit profile controllers
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _locationController;
+
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with current profile data
-    _nameController.text = _profileData['name'];
-    _emailController.text = _profileData['email'];
-    _phoneController.text = _profileData['phone'];
-    _locationController.text = _profileData['location'];
+    final User? user = _authService.getCurrentUser();
+    _nameController = TextEditingController(text: user?.displayName ?? 'Not set');
+    _emailController = TextEditingController(text: user?.email ?? 'Not set');
+    _phoneController = TextEditingController(text: '+91 9876543210'); // Static or fetch from elsewhere
+    _locationController = TextEditingController(text: 'Balamrampur, India');
     
   }
 
@@ -240,6 +246,7 @@ class _ProfileTabState extends State<ProfileTab> {
   Widget build(BuildContext context) {
     // Determine the current theme brightness
     bool isDarkMode = _darkModeEnabled;
+    final User? user = _authService.currentUser;
     final languageProvider = Provider.of<LanguageProvider>(context);
 
     return MaterialApp(
@@ -288,16 +295,13 @@ class _ProfileTabState extends State<ProfileTab> {
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.green,
-                              child: Text(
-                                _profileData['name'][0],
-                                style: const TextStyle(color: Colors.white),
-                              ),
+                              child: Icon(Icons.person)
                             ),
                             title: Text(
-                              _profileData['name'],
+                              user?.displayName ?? 'Not set',
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: Text(_profileData['email']),
+                            subtitle: Text(user?.email ?? 'Not set'),
                             trailing: IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: _showEditProfileBottomSheet,
