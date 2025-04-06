@@ -1,6 +1,55 @@
+// my_location_tab.dart
 import 'package:flutter/material.dart';
-class MyLocationTab extends StatelessWidget {
+import 'home.dart';
+import '../utils/weather_services.dart';
+
+class MyLocationTab extends StatefulWidget {
   const MyLocationTab({super.key});
+
+  @override
+  _MyLocationTabState createState() => _MyLocationTabState();
+}
+
+class _MyLocationTabState extends State<MyLocationTab> {
+  final LocationService _locationService = LocationService();
+  final WeatherService _weatherService = WeatherService();
+  String _cityName = "Fetching location...";
+  String _temperature = "Loading...";
+  String _weatherDescription = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocationAndWeather();
+  }
+
+  Future<void> _loadLocationAndWeather() async {
+    try {
+      // Fetch location
+      final locationData = await _locationService.fetchCityNameAndCoordinates();
+      setState(() {
+        _cityName = locationData['city'];
+      });
+
+      // Fetch weather if coordinates are available
+      if (locationData['lat'] != null && locationData['lon'] != null) {
+        final weatherData = await _weatherService.fetchWeather(
+          locationData['lat'],
+          locationData['lon'],
+        );
+        setState(() {
+          _temperature = "${weatherData['temperature']}°C";
+          _weatherDescription = weatherData['description'];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _cityName = "Error fetching data";
+        _temperature = "N/A";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +73,7 @@ class MyLocationTab extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 20), // City and Temperature Card
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Container(
@@ -48,12 +97,12 @@ class MyLocationTab extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              children: const [
-                                Icon(Icons.location_on, color: Colors.green, size: 20),
-                                SizedBox(width: 8),
+                              children: [
+                                const Icon(Icons.location_on, color: Colors.green, size: 20),
+                                const SizedBox(width: 8),
                                 Text(
-                                  'Bengaluru',
-                                  style: TextStyle(
+                                  _cityName,
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87,
@@ -62,9 +111,9 @@ class MyLocationTab extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            const Text(
-                              'Karnataka, India',
-                              style: TextStyle(
+                            Text(
+                              _weatherDescription.isNotEmpty ? _weatherDescription : 'Loading...',
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
                               ),
@@ -79,12 +128,12 @@ class MyLocationTab extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
-                          children: const [
-                            Icon(Icons.wb_sunny, color: Colors.orange),
-                            SizedBox(width: 8),
+                          children: [
+                            const Icon(Icons.wb_sunny, color: Colors.orange),
+                            const SizedBox(width: 8),
                             Text(
-                              '29°C',
-                              style: TextStyle(
+                              _temperature,
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
@@ -97,9 +146,7 @@ class MyLocationTab extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -108,21 +155,18 @@ class MyLocationTab extends StatelessWidget {
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                     children: [
-                      // Keep My Crop
                       _buildCropCard(
                         title: 'My Crop',
                         subtitle: 'Monitor and track growth',
                         icon: Icons.spa,
                         color: Colors.green,
                       ),
-                      // Keep Krishi Gyan
                       _buildCropCard(
                         title: 'Krishi Gyan',
                         subtitle: 'Agricultural knowledge',
                         icon: Icons.menu_book,
                         color: Colors.blue,
                       ),
-                      // Keep Weather and Community
                       _buildCropCard(
                         title: 'Weather',
                         subtitle: 'Forecasts for farming',
@@ -145,6 +189,7 @@ class MyLocationTab extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildCropCard({
     required String title,
     required String subtitle,

@@ -48,9 +48,67 @@ final List<CarouselItem> carouselItems = [
   ),
 ];
 
+class LocationService {
+  String _cityName = "Fetching location...";
+
+  String get cityName => _cityName;
+
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _cityName = "Location disabled";
+      return false;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _cityName = "Permission denied";
+        return false;
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      _cityName = "Permission denied forever";
+      return false;
+    }
+    return true;
+  }
+
+  Future<Map<String, dynamic>> fetchCityNameAndCoordinates() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) {
+      return {"city": _cityName, "lat": null, "lon": null};
+    }
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+      String? city = placemarks[0].locality;
+
+      _cityName = city != null && city.isNotEmpty ? city : "Unknown city";
+      return {
+        "city": _cityName,
+        "lat": position.latitude,
+        "lon": position.longitude
+      };
+    } catch (e) {
+      _cityName = "Error: $e";
+      return {"city": _cityName, "lat": null, "lon": null};
+    }
+  }
+}
+
 class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   bool _isExpanded = false;
+  final LocationService _locationService = LocationService(); // Instance of LocationService
+  String _cityName = "Fetching location...";
 
   @override
   void initState() {
@@ -67,6 +125,20 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     _animationController.dispose();
     super.dispose();
   }
+
+  Future<void> _fetchCityName() async {
+    try {
+      final locationData = await _locationService.fetchCityNameAndCoordinates();
+      setState(() {
+        _cityName = locationData['city']; // Update the city name in the state
+      });
+    } catch (e) {
+      setState(() {
+        _cityName = "Error fetching location";
+      });
+    }
+  }
+
 
   void _toggleExpand() {
     setState(() {
@@ -91,65 +163,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   }
 
 
-  String _cityName = "Fetching location..."; // Initial text
-
   
-     // Fetch location when screen loads
-
-
-  // Handle location permission
-  Future<bool> _handleLocationPermission() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      setState(() {
-        _cityName = "Location disabled";
-      });
-      return false;
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        setState(() {
-          _cityName = "Permission denied";
-        });
-        return false;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      setState(() {
-        _cityName = "Permission denied forever";
-      });
-      return false;
-    }
-    return true;
-  }
-
-  // Fetch city name from location
-  Future<void> _fetchCityName() async {
-    final hasPermission = await _handleLocationPermission();
-    if (!hasPermission) return;
-
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-      String? city = placemarks[0].locality;
-
-      setState(() {
-        _cityName = city != null && city.isNotEmpty ? city : "Unknown city";
-      });
-    } catch (e) {
-      setState(() {
-        _cityName = "Error: $e";
-      });
-    }
-  }
 
   String cleanPrediction(String rawPrediction) {
     // Split the string by '___' to separate class and disease
