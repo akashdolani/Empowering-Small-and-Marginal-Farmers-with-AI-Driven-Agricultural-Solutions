@@ -77,7 +77,9 @@ class _MyLocationTabState extends State<MyLocationTab> {
   }
 
   Future<void> _suggestCrops() async {
-    if (_tempValue == null || _humidityValue == null || _rainfallValue == null) {
+    if (_tempValue == null ||
+        _humidityValue == null ||
+        _rainfallValue == null) {
       return;
     }
 
@@ -112,7 +114,10 @@ class _MyLocationTabState extends State<MyLocationTab> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [const Color.fromARGB(255, 99, 194, 104), const Color.fromARGB(255, 152, 175, 153)],
+            colors: [
+              const Color.fromARGB(255, 99, 194, 104),
+              const Color.fromARGB(255, 152, 175, 153),
+            ],
           ),
         ),
         child: SafeArea(
@@ -152,7 +157,11 @@ class _MyLocationTabState extends State<MyLocationTab> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.location_on, color: Colors.green, size: 20),
+                                const Icon(
+                                  Icons.location_on,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   _cityName,
@@ -166,7 +175,9 @@ class _MyLocationTabState extends State<MyLocationTab> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              _weatherDescription.isNotEmpty ? _weatherDescription : 'Loading...',
+                              _weatherDescription.isNotEmpty
+                                  ? _weatherDescription
+                                  : 'Loading...',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
@@ -176,7 +187,10 @@ class _MyLocationTabState extends State<MyLocationTab> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(16),
@@ -245,12 +259,13 @@ class _MyLocationTabState extends State<MyLocationTab> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CropSuggestionScreen(
-              suggestedCrops: _suggestedCrops,
-              temperature: _tempValue ?? 0,
-              humidity: _humidityValue ?? 0,
-              rainfall: _rainfallValue ?? 0,
-            ),
+            builder:
+                (context) => CropSuggestionScreen(
+                  suggestedCrops: _suggestedCrops,
+                  temperature: _tempValue ?? 0,
+                  humidity: _humidityValue ?? 0,
+                  rainfall: _rainfallValue ?? 0,
+                ),
           ),
         );
       },
@@ -269,11 +284,7 @@ class _MyLocationTabState extends State<MyLocationTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.spa,
-              size: 36,
-              color: Colors.green,
-            ),
+            const Icon(Icons.spa, size: 36, color: Colors.green),
             const SizedBox(height: 8),
             const Text(
               'My Crop',
@@ -286,29 +297,26 @@ class _MyLocationTabState extends State<MyLocationTab> {
             const SizedBox(height: 4),
             _isLoadingCrops
                 ? const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: 15,
-                width: 15,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.green,
-                ),
-              ),
-            )
+                  padding: EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: 15,
+                    width: 15,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.green,
+                    ),
+                  ),
+                )
                 : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                _suggestedCrops.isNotEmpty
-                    ? 'Top suggestion: ${_suggestedCrops.first.cropName}'
-                    : 'Get crop suggestions',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    _suggestedCrops.isNotEmpty
+                        ? 'Top suggestion: ${_suggestedCrops.first.cropName}'
+                        : 'Get crop suggestions',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ),
           ],
         ),
       ),
@@ -336,11 +344,7 @@ class _MyLocationTabState extends State<MyLocationTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 40,
-            color: color,
-          ),
+          Icon(icon, size: 40, color: color),
           const SizedBox(height: 8),
           Text(
             title,
@@ -355,10 +359,7 @@ class _MyLocationTabState extends State<MyLocationTab> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
           ),
@@ -391,13 +392,18 @@ class CropSuggestionService {
 
     try {
       // Load the JSON file from assets (preferred over CSV for easier parsing)
-      final String jsonString = await rootBundle.loadString('assets/crop_data.json');
+      final String jsonString = await rootBundle.loadString(
+        'assets/crop_data.json',
+      );
       final List<dynamic> jsonData = json.decode(jsonString);
 
       // Convert each item to a map
-      _cropData = jsonData.map<Map<String, dynamic>>((item) =>
-      Map<String, dynamic>.from(item)
-      ).toList();
+      _cropData =
+          jsonData
+              .map<Map<String, dynamic>>(
+                (item) => Map<String, dynamic>.from(item),
+              )
+              .toList();
 
       _isLoaded = true;
     } catch (e) {
@@ -414,7 +420,9 @@ class CropSuggestionService {
 
   Future<void> _loadFromCSV() async {
     // This is a fallback method in case JSON loading fails
-    final String csvString = await rootBundle.loadString('assets/crop_data.csv');
+    final String csvString = await rootBundle.loadString(
+      'assets/crop_data.csv',
+    );
 
     // Basic CSV parsing (consider using a proper CSV package in production)
     List<String> lines = csvString.split('\n');
@@ -440,15 +448,18 @@ class CropSuggestionService {
 
   // Calculate the similarity between input conditions and crop requirements
   double _calculateSimilarity(
-      double temp1, double temp2,
-      double humidity1, double humidity2,
-      double rainfall1, double rainfall2,
-      ) {
+    double temp1,
+    double temp2,
+    double humidity1,
+    double humidity2,
+    double rainfall1,
+    double rainfall2,
+  ) {
     // Calculate Euclidean distance
     double distance = sqrt(
-        pow(temp1 - temp2, 2) +
-            pow(humidity1 - humidity2, 2) +
-            pow(rainfall1 - rainfall2, 2)
+      pow(temp1 - temp2, 2) +
+          pow(humidity1 - humidity2, 2) +
+          pow(rainfall1 - rainfall2, 2),
     );
 
     // Convert distance to similarity score (lower distance = higher similarity)
@@ -466,7 +477,8 @@ class CropSuggestionService {
       await loadCropData();
     }
 
-    List<CropSuggestion> suggestions = [];
+    // Step 1: Group crops by name and store all variants
+    Map<String, List<CropSuggestion>> groupedCrops = {};
 
     for (var crop in _cropData) {
       try {
@@ -476,12 +488,15 @@ class CropSuggestionService {
         String cropName = crop['label'].toString();
 
         double similarity = _calculateSimilarity(
-          temperature, cropTemp,
-          humidity, cropHumidity,
-          rainfall, cropRainfall,
+          temperature,
+          cropTemp,
+          humidity,
+          cropHumidity,
+          rainfall,
+          cropRainfall,
         );
 
-        suggestions.add(CropSuggestion(
+        CropSuggestion suggestion = CropSuggestion(
           cropName: cropName,
           matchScore: similarity,
           conditions: {
@@ -489,18 +504,33 @@ class CropSuggestionService {
             'humidity': cropHumidity,
             'rainfall': cropRainfall,
           },
-        ));
+        );
+
+        if (!groupedCrops.containsKey(cropName)) {
+          groupedCrops[cropName] = [];
+        }
+        groupedCrops[cropName]!.add(suggestion);
       } catch (e) {
         print('Error processing crop data: $e');
         continue;
       }
     }
 
-    // Sort by match score (highest first)
-    suggestions.sort((a, b) => b.matchScore.compareTo(a.matchScore));
+    // Step 2: Select the best variant for each crop name
+    List<CropSuggestion> uniqueSuggestions = [];
 
-    // Return top N suggestions
-    return suggestions.take(limit).toList();
+    groupedCrops.forEach((cropName, variants) {
+      // Find the variant with the highest match score
+      CropSuggestion bestVariant = variants.reduce(
+        (a, b) => a.matchScore > b.matchScore ? a : b,
+      );
+      uniqueSuggestions.add(bestVariant);
+    });
+
+    // Step 3: Sort by match score (highest first) and take top N
+    uniqueSuggestions.sort((a, b) => b.matchScore.compareTo(a.matchScore));
+
+    return uniqueSuggestions.take(limit).toList();
   }
 }
 
@@ -532,7 +562,10 @@ class CropSuggestionScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [const Color.fromARGB(255, 245, 245, 245), const Color.fromARGB(255, 230, 240, 230)],
+            colors: [
+              const Color.fromARGB(255, 245, 245, 245),
+              const Color.fromARGB(255, 230, 240, 230),
+            ],
           ),
         ),
         child: SafeArea(
@@ -594,108 +627,110 @@ class CropSuggestionScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 const Text(
                   'Top 3 Recommended Crops',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
-                  child: suggestedCrops.isEmpty
-                      ? const Center(
-                    child: Text('No crop suggestions available'),
-                  )
-                      : ListView.builder(
-                    itemCount: suggestedCrops.length,
-                    itemBuilder: (context, index) {
-                      final crop = suggestedCrops[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.green.withOpacity(0.2),
-                                    child: Text(
-                                      '${index + 1}',
-                                      style: const TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          crop.cropName,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Match Score: ${crop.matchScore.toStringAsFixed(1)}%',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.eco,
-                                    color: Colors.green,
-                                    size: 28,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'Ideal Growing Conditions:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                  child:
+                      suggestedCrops.isEmpty
+                          ? const Center(
+                            child: Text('No crop suggestions available'),
+                          )
+                          : ListView.builder(
+                            itemCount: suggestedCrops.length,
+                            itemBuilder: (context, index) {
+                              final crop = suggestedCrops[index];
+                              return Card(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  _buildConditionDetail(
-                                    'Temp',
-                                    '${crop.conditions['temperature']}°C',
-                                    Icons.thermostat_outlined,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundColor: Colors.green
+                                                .withOpacity(0.2),
+                                            child: Text(
+                                              '${index + 1}',
+                                              style: const TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  crop.cropName,
+                                                  style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  'Match Score: ${crop.matchScore.toStringAsFixed(1)}%',
+                                                  style: TextStyle(
+                                                    color: Colors.grey.shade600,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.eco,
+                                            color: Colors.green,
+                                            size: 28,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Text(
+                                        'Ideal Growing Conditions:',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          _buildConditionDetail(
+                                            'Temp',
+                                            '${crop.conditions['temperature']}°C',
+                                            Icons.thermostat_outlined,
+                                          ),
+                                          _buildConditionDetail(
+                                            'Humidity',
+                                            '${crop.conditions['humidity']}%',
+                                            Icons.water_drop_outlined,
+                                          ),
+                                          _buildConditionDetail(
+                                            'Rainfall',
+                                            '${crop.conditions['rainfall']} mm',
+                                            Icons.umbrella_outlined,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  _buildConditionDetail(
-                                    'Humidity',
-                                    '${crop.conditions['humidity']}%',
-                                    Icons.water_drop_outlined,
-                                  ),
-                                  _buildConditionDetail(
-                                    'Rainfall',
-                                    '${crop.conditions['rainfall']} mm',
-                                    Icons.umbrella_outlined,
-                                  ),
-                                ],
-                              ),
-                            ],
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    },
-                  ),
                 ),
               ],
             ),
@@ -705,7 +740,12 @@ class CropSuggestionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConditionIndicator(String label, String value, IconData icon, Color color) {
+  Widget _buildConditionIndicator(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       children: [
         Container(
@@ -714,26 +754,16 @@ class CropSuggestionScreen extends StatelessWidget {
             color: color.withOpacity(0.15),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
+          child: Icon(icon, color: color, size: 24),
         ),
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         Text(
           label,
-          style: TextStyle(
-            color: Colors.grey.shade600,
-            fontSize: 12,
-          ),
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
         ),
       ],
     );
@@ -744,16 +774,10 @@ class CropSuggestionScreen extends StatelessWidget {
       children: [
         Icon(icon, color: Colors.green),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         Text(
           label,
-          style: TextStyle(
-            color: Colors.grey.shade600,
-            fontSize: 12,
-          ),
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
         ),
       ],
     );
