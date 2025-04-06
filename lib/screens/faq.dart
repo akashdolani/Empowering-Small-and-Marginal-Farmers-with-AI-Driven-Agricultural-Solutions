@@ -1,14 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:solutionchallenge/models/language_model.dart';
+import '../utils/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class FAQTab extends StatelessWidget {
   const FAQTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FAQ'),
+        title: Text(appLocalizations.translate('faq')),
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 99, 194, 104),
       ),
@@ -41,29 +48,29 @@ class FAQTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 _buildFaqItem(
-                  question: 'How to use soil moisture sensors?',
+                  question: appLocalizations.translate('faq1'),
                   answer:
-                  'Install the sensor probe in soil at root level. Connect to the receiver and calibrate according to soil type. Monitor readings through the app.',
+                  appLocalizations.translate('faq1A'),
                 ),
                 _buildFaqItem(
-                  question: 'What crops are suitable for my region?',
+                  question: appLocalizations.translate('faq2'),
                   answer:
-                  'The app analyzes your location, soil type, and climate data to recommend suitable crops. Go to My Crop section and use the Crop Advisor feature.',
+                  appLocalizations.translate('faq2A'),
                 ),
                 _buildFaqItem(
-                  question: 'How to troubleshoot hardware issues?',
+                  question: appLocalizations.translate('faq3'),
                   answer:
-                  'Check power supply and connections. Ensure devices are within network range. Clean sensors regularly. For persistent issues, contact customer support.',
+                  appLocalizations.translate('faq3A'),
                 ),
                 _buildFaqItem(
-                  question: 'When is the best time to harvest?',
+                  question: appLocalizations.translate('faq4'),
                   answer:
-                  'Optimal harvest time varies by crop. The app provides notifications based on crop maturity, weather forecasts, and market conditions.',
+                  appLocalizations.translate('faq4A'),
                 ),
                 _buildFaqItem(
-                  question: 'How do I update my device firmware?',
+                  question: appLocalizations.translate('faq5'),
                   answer:
-                  'Go to Hardware section, select your device, and check for available updates. Ensure your device is charged above 50% before updating.',
+                  appLocalizations.translate('faq5A'),
                 ),
               ],
             ),

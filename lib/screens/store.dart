@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:solutionchallenge/models/language_model.dart';
+import '../utils/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 // Main ShopTab class
 class ShopTab extends StatefulWidget {
@@ -14,9 +17,13 @@ class _ShopTabState extends State<ShopTab> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shop'),
+        title: Text(appLocalizations.translate('shop')),
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 99, 194, 104),
       ),
@@ -68,13 +75,17 @@ class _ShopTabState extends State<ShopTab> {
 
   // Category selection buttons
   Widget _buildCategorySelection() {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'What are you looking for?',
+          Text(
+            appLocalizations.translate('q1'),
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -100,8 +111,8 @@ class _ShopTabState extends State<ShopTab> {
                     children: [
                       const Icon(Icons.handyman, size: 40),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Farming Tools',
+                      Text(
+                        appLocalizations.translate('option1'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -130,8 +141,8 @@ class _ShopTabState extends State<ShopTab> {
                     children: [
                       const Icon(Icons.spa, size: 40),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Crops',
+                      Text(
+                        appLocalizations.translate('option2'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -150,6 +161,10 @@ class _ShopTabState extends State<ShopTab> {
 
   // Farming Tools list
   Widget _buildFarmingToolsList(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -165,8 +180,8 @@ class _ShopTabState extends State<ShopTab> {
                   });
                 },
               ),
-              const Text(
-                'Agricultural Tools',
+              Text(
+                appLocalizations.translate('toolsH'),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -177,38 +192,38 @@ class _ShopTabState extends State<ShopTab> {
           const SizedBox(height: 16),
           _buildToolItem(
             context: context,
-            name: 'Hand Tools',
-            description: 'Basic farming tools for manual work',
+            name: appLocalizations.translate('tool1T'),
+            description: appLocalizations.translate('tool1D'),
             price: '₹500 - ₹2000',
             imageAsset: 'assets/hand_tools.jpg',
-            details: 'Hand tools include shovels, hoes, pruning shears, and other manual implements essential for basic farming tasks.',
+            details: appLocalizations.translate('toolDe'),
             isCrop: false,
           ),
           _buildToolItem(
             context: context,
-            name: 'Power Tools',
-            description: 'Efficient tools for faster work',
+            name: appLocalizations.translate('tool2T'),
+            description: appLocalizations.translate('tool2D'),
             price: '₹2000 - ₹15000',
             imageAsset: 'assets/power_tools.jpg',
-            details: 'Power tools include tillers, chainsaws, and trimmers that increase efficiency and reduce manual labor.',
+            details: appLocalizations.translate('tool2De'),
             isCrop: false,
           ),
           _buildToolItem(
            context: context,
-            name: 'IoT Sensors',
-            description: 'Smart monitoring for your farm',
+            name: appLocalizations.translate('tool3T'),
+            description: appLocalizations.translate('tool3D'),
             price: '₹1500 - ₹5000',
             imageAsset: 'assets/iot_sensors.jpg',
-            details: 'IoT sensors monitor soil moisture, temperature, and other important parameters to optimize crop growth.',
+            details: appLocalizations.translate('tool3De'),
             isCrop: false,
           ),
           _buildToolItem(
             context: context,
-            name: 'Irrigation Systems',
-            description: 'Water management solutions',
+            name: appLocalizations.translate('tool4T'),
+            description: appLocalizations.translate('tool4D'),
             price: '₹3000 - ₹25000',
             imageAsset: 'assets/irrigation.jpg',
-            details: 'Irrigation systems include drip, sprinkler, and other water distribution technologies for efficient water usage.',
+            details: appLocalizations.translate('tool4De'),
             isCrop: false,
           ),
         ],
@@ -218,6 +233,10 @@ class _ShopTabState extends State<ShopTab> {
 
   // Crops list
   Widget _buildCropsList(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -233,8 +252,8 @@ class _ShopTabState extends State<ShopTab> {
                   });
                 },
               ),
-              const Text(
-                'Crop Seeds',
+              Text(
+                appLocalizations.translate('cropT'),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -245,11 +264,11 @@ class _ShopTabState extends State<ShopTab> {
           const SizedBox(height: 16),
           _buildToolItem(
             context: context,
-            name: 'Wheat Seeds',
-            description: 'High-yield wheat variety',
+            name: appLocalizations.translate('crop1T'),
+            description: appLocalizations.translate('crop1D'),
             price: '₹200 - ₹500 per kg',
             imageAsset: 'assets/wheat_seeds.jpg',
-            details: 'Drought-resistant wheat variety suitable for most soil types. Growing season: 100-120 days.',
+            details: appLocalizations.translate('crop1De'),
             isCrop: true,
             marketPrice: '₹2200 - ₹2400 per quintal',
             growingPeriod: '100-120 days',
@@ -257,11 +276,11 @@ class _ShopTabState extends State<ShopTab> {
           ),
           _buildToolItem(
             context: context,
-            name: 'Rice Seeds',
-            description: 'Premium paddy seeds',
+            name: appLocalizations.translate('crop2T'),
+            description: appLocalizations.translate('crop2D'),
             price: '₹300 - ₹700 per kg',
             imageAsset: 'assets/rice_seeds.jpg',
-            details: 'High-yielding paddy seeds suitable for wetland cultivation.',
+            details: appLocalizations.translate('crop2De'),
             isCrop: true,
             marketPrice: '₹1800 - ₹2100 per quintal',
             growingPeriod: '120-150 days',
@@ -269,11 +288,11 @@ class _ShopTabState extends State<ShopTab> {
           ),
           _buildToolItem(
             context: context,
-            name: 'Cotton Seeds',
-            description: 'BT cotton seeds',
+            name: appLocalizations.translate('crop3T'),
+            description: appLocalizations.translate('crop3D'),
             price: '₹800 - ₹1200 per kg',
             imageAsset: 'assets/cotton_seeds.jpg',
-            details: 'BT cotton seeds with pest resistance and high yield potential.',
+            details: appLocalizations.translate('crop3De'),
             isCrop: true,
             marketPrice: '₹6000 - ₹6500 per quintal',
             growingPeriod: '160-180 days',
@@ -281,11 +300,11 @@ class _ShopTabState extends State<ShopTab> {
           ),
           _buildToolItem(
             context: context,
-            name: 'Soybean Seeds',
-            description: 'High protein variety',
+            name: appLocalizations.translate('crop4T'),
+            description: appLocalizations.translate('crop4D'),
             price: '₹250 - ₹600 per kg',
             imageAsset: 'assets/soybean_seeds.webp',
-            details: 'High protein soybean seeds with good drought tolerance.',
+            details: appLocalizations.translate('crop4De'),
             isCrop: true,
             marketPrice: '₹3800 - ₹4200 per quintal',
             growingPeriod: '90-120 days',

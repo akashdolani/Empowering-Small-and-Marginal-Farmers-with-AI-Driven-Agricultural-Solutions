@@ -7,6 +7,9 @@ import 'package:flutter/services.dart';
 import '../presentation/home/home2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:solutionchallenge/models/language_model.dart';
+import '../utils/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 
 class HomeTab extends StatefulWidget {
@@ -33,18 +36,18 @@ class CarouselItem {
 final List<CarouselItem> carouselItems = [
   CarouselItem(
     imagePath: 'assets/images/images1.jpg', // Path to local asset
-    title: 'Crop Rotation Benefits',
-    description: 'Learn about sustainable farming techniques',
+    title: 'title1',
+    description: 'desc1',
   ),
   CarouselItem(
     imagePath: 'assets/images/images2.jpg',
-    title: 'New Irrigation System',
-    description: 'Save water with modern technology',
+    title: 'title2',
+    description: 'desc2',
   ),
   CarouselItem(
     imagePath: 'assets/images/images3.jpg',
-    title: 'Organic Fertilizers',
-    description: 'Boost yields naturally',
+    title: 'title3',
+    description: 'desc3',
   ),
 ];
 
@@ -229,6 +232,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   @override
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -300,8 +307,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Latest Updates',
+                            Text(
+                              appLocalizations.translate('latestUpdates'),
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -350,7 +357,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            item.title,
+                                            appLocalizations.translate(item.title),
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -359,7 +366,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            item.description,
+                                            appLocalizations.translate(item.description),
                                             style: TextStyle(
                                               color: Colors.white.withOpacity(
                                                 0.8,
@@ -386,8 +393,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Today\'s Tasks',
+                            Text(
+                              appLocalizations.translate('tasks'),
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -419,17 +426,17 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                 itemBuilder: (context, index) {
                                   final tasks = [
                                     {
-                                      'title': 'Water wheat field',
+                                      'title': appLocalizations.translate('item1'),
                                       'icon': Icons.water_drop,
                                       'color': Colors.blue,
                                     },
                                     {
-                                      'title': 'Apply pesticides',
+                                      'title': appLocalizations.translate('item2'),
                                       'icon': Icons.pest_control,
                                       'color': Colors.orange,
                                     },
                                     {
-                                      'title': 'Harvest corn',
+                                      'title': appLocalizations.translate('item3'),
                                       'icon': Icons.agriculture,
                                       'color': Colors.green,
                                     },
@@ -468,8 +475,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                           children: [
                             Expanded(
                               child: _buildFeatureCard(
-                                title: 'Crop Disease',
-                                description: 'Analyze plant health',
+                                title: appLocalizations.translate('aiTitle'),
+                                description: appLocalizations.translate('aiDesc'),
                                 icon: Icons.camera_alt,
                                 color: Colors.redAccent,
                                 onTap: () {
@@ -480,8 +487,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                             const SizedBox(width: 16),
                             Expanded(
                               child: _buildFeatureCard(
-                                title: 'Field Scanning',
-                                description: 'Monitor your fields',
+                                title: appLocalizations.translate('fieldTitle'),
+                                description: appLocalizations.translate('fieldDesc'),
                                 icon: Icons.landscape,
                                 color: Colors.green,
                                 onTap: () {
@@ -499,8 +506,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: _buildFeatureCard(
-                          title: 'Ask Our AI',
-                          description: 'Get personalized farming advice',
+                          title: appLocalizations.translate('chatAITitle'),
+                          description: appLocalizations.translate('chatAIDesc'),
                           icon: Icons.chat,
                           color: Colors.purple,
                           onTap: () {
