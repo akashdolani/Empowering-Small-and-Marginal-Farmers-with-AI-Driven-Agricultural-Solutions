@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:solutionchallenge/screens/demoscreen.dart';
 import 'dart:math';
 import 'home.dart';
 import '../utils/weather_services.dart';
+import 'package:solutionchallenge/models/language_model.dart';
+import '../utils/app_localizations.dart';
+import 'package:provider/provider.dart';
+
+
 
 class MyLocationTab extends StatefulWidget {
   const MyLocationTab({super.key});
@@ -106,8 +112,68 @@ class _MyLocationTabState extends State<MyLocationTab> {
     }
   }
 
+  Widget _buildFeatureCard({
+    required String title,
+    required String description,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    bool fullWidth = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: color.withOpacity(0.2),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    description,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -246,6 +312,28 @@ class _MyLocationTabState extends State<MyLocationTab> {
                   ),
                 ),
               ),
+              // Ask Our AI Section
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _buildFeatureCard(
+                  title: 'My Field',
+                  description: 'View Your Field',
+                  icon: Icons.video_camera_back,
+                  color: Colors.purple,
+                  onTap: () {
+                    // Navigate to AI chat screen
+                    // Navigate to AI chat screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const demoApp(),
+                      ),
+                    );
+                  },
+                  fullWidth: true,
+                ),
+              ),
+              const SizedBox(height: 80),
             ],
           ),
         ),
