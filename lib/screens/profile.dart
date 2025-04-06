@@ -4,6 +4,7 @@ import 'package:solutionchallenge/models/language_model.dart';
 import '../../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
 
@@ -438,8 +439,12 @@ class _ProfileTabState extends State<ProfileTab> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Implement actual logout logic
-                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const LoginScreen(),
+                                        ),
+                                      );
                                     },
                                     child: const Text('Logout'),
                                   ),
