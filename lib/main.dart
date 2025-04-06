@@ -15,15 +15,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dotenv.load(fileName: ".env");
   runApp(
-      ChangeNotifierProvider(
-        create: (context) => LanguageProvider(),
-        child: const BhoomiApp(),
-      )
+    ChangeNotifierProvider(
+      create: (context) => LanguageProvider(),
+      child: const BhoomiApp(),
+    ),
   );
 }
 
@@ -45,13 +43,15 @@ class BhoomiApp extends StatelessWidget {
   }
 }
 
-// Auth Service to handle Firebase Authentication
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Sign in with email and password
-  Future<UserCredential?> signInWithEmailPassword(String email, String password) async {
+  Future<UserCredential?> signInWithEmailPassword(
+    String email,
+    String password,
+  ) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -59,32 +59,36 @@ class AuthService {
       );
       return userCredential;
     } on FirebaseAuthException {
-      rethrow;
+      rethrow; // Caller handles specific Firebase errors
     }
   }
 
   // Register with email and password
-  Future<UserCredential?> registerWithEmailPassword(String email, String password) async {
+  Future<UserCredential?> registerWithEmailPassword(
+    String email,
+    String password,
+  ) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
       return userCredential;
     } on FirebaseAuthException {
-      rethrow;
+      rethrow; // Caller handles specific Firebase errors
     }
   }
 
-  // Sign in with Google
+  // Sign in with Google (also registers new users automatically)
   Future<UserCredential?> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
+      if (googleUser == null) {
+        throw Exception('Google Sign-In was cancelled by the user');
+      }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -92,18 +96,24 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
-      // Sign in with the credential
-      return await _auth.signInWithCredential(credential);
+      // Sign in with the credential (registers new user if not existing)
+      UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
+      return userCredential;
+    } on FirebaseAuthException {
+      rethrow; // Caller handles specific Firebase errors
     } catch (e) {
-      print('Error signing in with Google: $e');
-      return null;
+      throw Exception(
+        'Error signing in with Google: $e',
+      ); // Throw for caller to handle
     }
   }
 
   // Sign out
   Future<void> signOut() async {
-    await _auth.signOut();
     await _googleSignIn.signOut();
+    await _auth.signOut();
   }
 
   // Get current user
@@ -118,7 +128,9 @@ class LanguageSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
-    final appLocalizations = AppLocalizations(languageProvider.currentLanguage.code);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
 
     return Scaffold(
       body: Container(
@@ -166,17 +178,24 @@ class LanguageSelectionScreen extends StatelessWidget {
                     child: ListView.builder(
                       itemCount: languageProvider.availableLanguages.length,
                       itemBuilder: (context, index) {
-                        final language = languageProvider.availableLanguages[index];
-                        final isSelected = language.code == languageProvider.currentLanguage.code;
+                        final language =
+                            languageProvider.availableLanguages[index];
+                        final isSelected =
+                            language.code ==
+                            languageProvider.currentLanguage.code;
 
                         return Card(
                           color: isSelected ? Colors.green.shade50 : null,
                           child: ListTile(
                             title: Text(language.name),
                             subtitle: Text(language.nativeName),
-                            trailing: isSelected
-                                ? const Icon(Icons.check_circle, color: Colors.green)
-                                : null,
+                            trailing:
+                                isSelected
+                                    ? const Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green,
+                                    )
+                                    : null,
                             onTap: () {
                               languageProvider.setLanguage(language);
                             },
@@ -254,9 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (userCredential != null && mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
         }
       } on FirebaseAuthException catch (e) {
@@ -274,51 +291,64 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final userCredential = await _authService.signInWithGoogle();
+  try {
+    final userCredential = await _authService.signInWithGoogle();
+    if (userCredential == null) {
+      _showErrorDialog('Google sign-in returned no credentials');
+      return;
+    }
 
-      if (userCredential != null && mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ),
-        );
-      }
-    } catch (e) {
-      _showErrorDialog('Google sign-in failed');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    }
+  } on FirebaseAuthException catch (e) {
+    String message = 'Google sign-in failed';
+    if (e.code == 'user-not-found') {
+      message = 'No account exists for this Google user. Please register first.';
+    } else if (e.code == 'wrong-password') {
+      message = 'Incorrect credentials'; // Shouldn’t happen with Google, but included for completeness
+    }
+    _showErrorDialog(message);
+  } catch (e) {
+    _showErrorDialog(e.toString()); // Show detailed error
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+}
 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Authentication Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Authentication Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
-    final appLocalizations = AppLocalizations(languageProvider.currentLanguage.code);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -371,17 +401,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
                         const Text(
                           'Agriculture Assistant',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                         const SizedBox(height: 32),
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            labelText: appLocalizations.translate('mobileOrEmail'),
+                            labelText: appLocalizations.translate(
+                              'mobileOrEmail',
+                            ),
                             prefixIcon: const Icon(Icons.person),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -431,7 +460,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () {
                               _showForgotPasswordDialog();
                             },
-                            child: Text(appLocalizations.translate('forgotPassword')),
+                            child: Text(
+                              appLocalizations.translate('forgotPassword'),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -445,12 +476,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : Text(
-                            appLocalizations.translate('login'),
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                          child:
+                              _isLoading
+                                  ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                  : Text(
+                                    appLocalizations.translate('login'),
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -461,11 +495,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => const RegisterScreen(),
+                                    builder:
+                                        (context) => const RegisterScreen(),
                                   ),
                                 );
                               },
-                              child: Text(appLocalizations.translate('register')),
+                              child: Text(
+                                appLocalizations.translate('register'),
+                              ),
                             ),
                           ],
                         ),
@@ -473,21 +510,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: Divider(
-                                color: Colors.grey.shade400,
-                              ),
+                              child: Divider(color: Colors.grey.shade400),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
                               child: Text(
                                 appLocalizations.translate('or'),
                                 style: TextStyle(color: Colors.grey.shade600),
                               ),
                             ),
                             Expanded(
-                              child: Divider(
-                                color: Colors.grey.shade400,
-                              ),
+                              child: Divider(color: Colors.grey.shade400),
                             ),
                           ],
                         ),
@@ -499,7 +534,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 24,
                           ),
                           label: Text(
-                            appLocalizations.translate('Sign in') ?? 'Sign in with Google',
+                            appLocalizations.translate('Sign in') ??
+                                'Sign in with Google',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -529,8 +565,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showLanguageDialog(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-    final appLocalizations = AppLocalizations(languageProvider.currentLanguage.code);
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    );
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
 
     showDialog(
       context: context,
@@ -544,14 +585,16 @@ class _LoginScreenState extends State<LoginScreen> {
               itemCount: languageProvider.availableLanguages.length,
               itemBuilder: (context, index) {
                 final language = languageProvider.availableLanguages[index];
-                final isSelected = language.code == languageProvider.currentLanguage.code;
+                final isSelected =
+                    language.code == languageProvider.currentLanguage.code;
 
                 return ListTile(
                   title: Text(language.name),
                   subtitle: Text(language.nativeName),
-                  trailing: isSelected
-                      ? const Icon(Icons.check_circle, color: Colors.green)
-                      : null,
+                  trailing:
+                      isSelected
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : null,
                   onTap: () {
                     languageProvider.setLanguage(language);
                     Navigator.pop(context);
@@ -579,56 +622,55 @@ class _LoginScreenState extends State<LoginScreen> {
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Reset Password'),
-        content: Form(
-          key: formKey,
-          child: TextFormField(
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              hintText: 'Enter your email address',
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Reset Password'),
+            content: Form(
+              key: formKey,
+              child: TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'Enter your email address',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              return null;
-            },
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    try {
+                      Navigator.of(ctx).pop();
+                      await FirebaseAuth.instance.sendPasswordResetEmail(
+                        email: emailController.text.trim(),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Password reset email sent'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error: ${e.toString()}')),
+                      );
+                    }
+                  }
+                },
+                child: const Text('Send Reset Link'),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                try {
-                  Navigator.of(ctx).pop();
-                  await FirebaseAuth.instance.sendPasswordResetEmail(
-                    email: emailController.text.trim(),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Password reset email sent'),
-                    ),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error: ${e.toString()}'),
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text('Send Reset Link'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -646,7 +688,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
@@ -675,7 +718,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         if (userCredential != null && mounted) {
           // Update user profile with name
-          await userCredential.user?.updateDisplayName(_nameController.text.trim());
+          await userCredential.user?.updateDisplayName(
+            _nameController.text.trim(),
+          );
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Registration successful')),
@@ -709,23 +754,66 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Registration Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Registration Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
+  }
+
+  Future<void> _registerWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userCredential = await _authService.signInWithGoogle();
+      if (userCredential == null) {
+        _showErrorDialog('Google registration returned no credentials');
+        return;
+      }
+
+      final user = userCredential.user;
+      if (user != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful with Google')),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String message = 'Google registration failed';
+      if (e.code == 'account-exists-with-different-credential') {
+        message = 'This account exists with a different sign-in method';
+      } else if (e.code == 'invalid-credential') {
+        message = 'Invalid Google credentials';
+      }
+      _showErrorDialog(message);
+    } catch (e) {
+      _showErrorDialog(e.toString()); // Show detailed error
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
-    final appLocalizations = AppLocalizations(languageProvider.currentLanguage.code);
+    final appLocalizations = AppLocalizations(
+      languageProvider.currentLanguage.code,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -759,7 +847,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          appLocalizations.translate('createAccount') ?? 'Create Account',
+                          appLocalizations.translate('createAccount') ??
+                              'Create Account',
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -771,7 +860,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         TextFormField(
                           controller: _nameController,
                           decoration: InputDecoration(
-                            labelText: appLocalizations.translate('fullName') ?? 'Full Name',
+                            labelText:
+                                appLocalizations.translate('fullName') ??
+                                'Full Name',
                             prefixIcon: const Icon(Icons.person),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -790,7 +881,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            labelText: appLocalizations.translate('email') ?? 'Email',
+                            labelText:
+                                appLocalizations.translate('email') ?? 'Email',
                             prefixIcon: const Icon(Icons.email),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -800,7 +892,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
                             }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                            if (!RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            ).hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
                             return null;
@@ -812,7 +906,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
-                            labelText: appLocalizations.translate('password') ?? 'Password',
+                            labelText:
+                                appLocalizations.translate('password') ??
+                                'Password',
                             prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -846,7 +942,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _confirmPasswordController,
                           obscureText: !_isConfirmPasswordVisible,
                           decoration: InputDecoration(
-                            labelText: appLocalizations.translate('confirmPassword') ?? 'Confirm Password',
+                            labelText:
+                                appLocalizations.translate('confirmPassword') ??
+                                'Confirm Password',
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -856,7 +954,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
                                 });
                               },
                             ),
@@ -885,25 +984,82 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : Text(
-                            appLocalizations.translate('register') ?? 'Register',
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                          child:
+                              _isLoading
+                                  ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                  : Text(
+                                    appLocalizations.translate('register') ??
+                                        'Register',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
                         ),
                         const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(appLocalizations.translate('alreadyHaveAccount') ?? 'Already have an account?'),
+                            Text(
+                              appLocalizations.translate(
+                                    'alreadyHaveAccount',
+                                  ) ??
+                                  'Already have an account?',
+                            ),
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                              child: Text(appLocalizations.translate('login') ?? 'Login'),
+                              child: Text(
+                                appLocalizations.translate('login') ?? 'Login',
+                              ),
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Divider(color: Colors.grey.shade400),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: Text(
+                                appLocalizations.translate('or') ?? 'Or',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(color: Colors.grey.shade400),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          icon: Image.asset(
+                            'assets/google_icon.webp',
+                            height: 24,
+                            width: 24,
+                          ),
+                          label: Text(
+                            appLocalizations.translate('signUpGoogle') ??
+                                'Sign Up',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          onPressed: _isLoading ? null : _registerWithGoogle,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(color: Colors.grey.shade300),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -917,7 +1073,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -952,14 +1107,8 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shop),
-            label: 'Shop',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.shop), label: 'Shop'),
           BottomNavigationBarItem(
             icon: Icon(Icons.question_answer),
             label: 'FAQ',
@@ -968,10 +1117,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.agriculture),
             label: 'My Location',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

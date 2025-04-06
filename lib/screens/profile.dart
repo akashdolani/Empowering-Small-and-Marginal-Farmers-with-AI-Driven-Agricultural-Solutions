@@ -45,9 +45,9 @@ class _ProfileTabState extends State<ProfileTab> {
   final ThemeData _lightTheme = ThemeData(
     brightness: Brightness.light,
     primarySwatch: Colors.green,
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: Color.fromARGB(255, 99, 194, 104),
     appBarTheme: AppBarTheme(
-      backgroundColor: Colors.green,
+      backgroundColor: Color.fromARGB(255, 99, 194, 104),
       foregroundColor: Colors.white,
     ),
     cardTheme: CardTheme(
